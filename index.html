@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Персональный ИИ-Ассистент</title>
+    <!-- Подключаем Tailwind CSS для современного интерфейса -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Подключаем Marked.js для корректного отображения Markdown (жирный текст, списки) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        /* Настройка скроллбара */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        /* Стили для текстового контента бота */
+        .prose p { margin-bottom: 0.75rem; }
+        .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 0.75rem; }
+        .prose strong { font-weight: 700; color: #1e293b; }
+        
+        /* Анимация появления сообщений */
+        .message-appear { animation: slideUp 0.3s ease-out forwards; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 h-screen flex overflow-hidden font-sans text-gray-900">
+
+    <!-- Боковая панель управления -->
+    <aside class="w-80 bg-white border-r border-gray-200 flex flex-col shadow-sm z-10">
+        <div class="p-6 border-b border-gray-100 bg-indigo-50/30">
+            <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                <span class="p-2 bg-indigo-600 rounded-lg text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                </span>
+                ИИ-Агент
+            </h1>
+            <p class="text-xs text-gray-500 mt-2 font-medium tracking-wide uppercase">Railway + n8n + Pinecone</p>
+        </div>
+
+        <div class="p-6 flex-1 overflow-y-auto space-y-6">
+            <!-- Выбор модели -->
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                    🧠 Выбор "Мозга"
+                </label>
+                <select id="model-select" class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 block p-3 outline-none transition-all shadow-sm">
+                    <optgroup label="Google (Рекомендуется)">
+                        <option value="google/gemini-2.5-flash" selected>Gemini 2.5 Flash (Быстрый)</option>
+                        <option value="google/gemini-pro-1.5">Gemini Pro 1.5 (Сложные задачи)</option>
+                    </optgroup>
+                    <optgroup label="DeepSeek (Экономично)">
+                        <option value="deepseek/deepseek-chat">DeepSeek V3 (Универсальный)</option>
+                        <option value="deepseek/deepseek-r1">DeepSeek R1 (Логика/Рассуждения)</option>
+                    </optgroup>
+                    <optgroup label="Другие флагманы">
+                        <option value="anthropic/claude-3.5-sonnet">Claude 3.5 Sonnet</option>
+                        <option value="openai/gpt-4o">GPT-4o (OpenAI)</option>
+                    </optgroup>
+                </select>
+                <p class="text-[10px] text-gray-400 mt-2 italic px-1">Модели предоставляются через OpenRouter API.</p>
+            </div>
+
+            <!-- Управление сессией -->
+            <div class="pt-6 border-t border-gray-100">
+                <button onclick="resetSession()" class="w-full bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 font-semibold rounded-xl text-sm px-5 py-3 transition-all shadow-sm flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    Новый диалог
+                </button>
+            </div>
+        </div>
+        
+        <div class="p-4 bg-gray-50 text-[10px] text-gray-400 text-center border-t border-gray-100 font-medium">
+            Personal AI Interface v2.5
+        </div>
+    </aside>
+
+    <!-- Основная область чата -->
+    <main class="flex-1 flex flex-col bg-gray-50 relative">
+        <!-- Контейнер сообщений -->
+        <div id="chat-container" class="flex-1 p-6 overflow-y-auto flex flex-col gap-6">
+            <!-- Приветствие -->
+            <div class="flex gap-4 max-w-3xl message-appear">
+                <div class="w-10 h-10 rounded-2xl bg-indigo-600 flex items-center justify-center flex-shrink-0 shadow-lg text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+                </div>
+                <div class="bg-white border border-gray-200 p-5 rounded-2xl rounded-tl-none shadow-sm text-gray-800 leading-relaxed">
+                    <p class="font-semibold text-indigo-600 mb-1">Система готова</p>
+                    Я — ваш персональный агент. Я подключен к вашей базе памяти на Railway и готов использовать любую модель. Выберите "мозг" слева и напишите что-нибудь!
+                </div>
+            </div>
+        </div>
+
+        <!-- Индикатор загрузки -->
+        <div id="loading-indicator" class="hidden absolute bottom-28 left-8 flex items-center gap-3 text-sm text-gray-500 bg-white px-5 py-2.5 rounded-full shadow-lg border border-gray-100 z-20">
+            <svg class="animate-spin h-5 w-5 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <span class="font-medium animate-pulse">Агент обрабатывает запрос...</span>
+        </div>
+
+        <!-- Поле ввода -->
+        <div class="bg-white border-t border-gray-200 p-6 shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
+            <div class="max-w-4xl mx-auto relative flex items-center">
+                <input type="text" id="chat-input" placeholder="Введите ваше сообщение..." 
+                    class="w-full bg-gray-50 border border-gray-300 text-gray-900 rounded-2xl pl-6 pr-16 py-4 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all shadow-inner text-base"
+                    onkeypress="if(event.key === 'Enter') sendMessage()">
+                <button onclick="sendMessage()" class="absolute right-3 bg-indigo-600 hover:bg-indigo-700 text-white p-3 rounded-xl transition-all shadow-md active:scale-90 flex items-center justify-center">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                </button>
+            </div>
+            <div class="text-center mt-3 text-[10px] text-gray-400">
+                Нажимая Enter, вы отправляете запрос в ваш приватный n8n workflow.
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // === АДРЕС ВАШЕГО ВЕБХУКА (ИЗ RAILWAY) ===
+        const N8N_WEBHOOK_URL = 'https://n8n-production-196d3.up.railway.app/webhook/f04f0dcf-afcb-4b32-ae35-cc426fe16628/chat'; 
+        
+        let sessionId = crypto.randomUUID();
+        const chatContainer = document.getElementById('chat-container');
+        const chatInput = document.getElementById('chat-input');
+        const loadingIndicator = document.getElementById('loading-indicator');
+
+        function resetSession() {
+            sessionId = crypto.randomUUID();
+            chatContainer.innerHTML = '';
+            appendMessage('bot', '✅ **Контекст сессии очищен.** Мы начали новый диалог. Ваша долгосрочная память (Pinecone) по-прежнему активна.');
+        }
+
+        async function sendMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            const selectedModel = document.getElementById('model-select').value;
+
+            // 1. Отображаем сообщение пользователя
+            appendMessage('user', text);
+            chatInput.value = '';
+            loadingIndicator.classList.remove('hidden');
+
+            try {
+                // 2. Отправляем POST запрос к n8n
+                const response = await fetch(`${N8N_WEBHOOK_URL}?model=${encodeURIComponent(selectedModel)}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'sendMessage',
+                        sessionId: sessionId,
+                        chatInput: text
+                    })
+                });
+
+                if (!response.ok) throw new Error('Сервер n8n недоступен');
+                
+                const data = await response.json();
+                
+                // n8n может возвращать массив или объект, пытаемся найти поле 'output'
+                const botResponse = data.output || (Array.isArray(data) ? data[0].output : 'Ошибка формата данных.');
+                
+                // 3. Отображаем ответ бота
+                appendMessage('bot', botResponse);
+
+            } catch (error) {
+                console.error(error);
+                appendMessage('bot', '❌ **Ошибка связи.** Убедитесь, что ваш n8n на Railway находится в статусе **Active/Published**. Также проверьте баланс OpenRouter.');
+            } finally {
+                loadingIndicator.classList.add('hidden');
+            }
+        }
+
+        function appendMessage(sender, text) {
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex gap-4 max-w-3xl message-appear ${sender === 'user' ? 'ml-auto flex-row-reverse' : ''}`;
+
+            const avatar = document.createElement('div');
+            avatar.className = `w-10 h-10 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-md text-xl ${sender === 'user' ? 'bg-indigo-600 text-white' : 'bg-white border border-gray-200'}`;
+            avatar.innerHTML = sender === 'user' ? '👤' : '🤖';
+
+            const bubble = document.createElement('div');
+            bubble.className = `p-5 rounded-2xl shadow-sm ${
+                sender === 'user' 
+                ? 'bg-indigo-600 text-white rounded-tr-none border-none' 
+                : 'bg-white border border-gray-200 text-gray-800 rounded-tl-none prose prose-sm max-w-none'
+            }`;
+            
+            // Рендерим Markdown только для сообщений бота
+            bubble.innerHTML = sender === 'bot' ? marked.parse(text) : text;
+
+            wrapper.appendChild(avatar);
+            wrapper.appendChild(bubble);
+            chatContainer.appendChild(wrapper);
+            
+            // Плавный скролл вниз
+            chatContainer.scrollTo({
+                top: chatContainer.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+    </script>
+</body>
+</html>
