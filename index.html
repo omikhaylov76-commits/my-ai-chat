@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enterprise AI Assistant | omikhaylov76</title>
-    <!-- Tailwind CSS для современного дизайна -->
+    <!-- Tailwind CSS для дизайна -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Marked.js для форматирования текста (Markdown) -->
+    <!-- Marked.js для рендеринга Markdown -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         ::-webkit-scrollbar { width: 5px; }
@@ -16,37 +16,39 @@
         .prose ul { list-style-type: disc; padding-left: 1.25rem; margin-bottom: 0.75rem; }
         .message-appear { animation: fadeInUp 0.4s ease-out forwards; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Стилизация выпадающего списка */
         optgroup { font-weight: 800; text-transform: uppercase; color: #4f46e5; background: #f8fafc; }
         option { font-weight: 400; text-transform: none; color: #1e293b; background: white; }
     </style>
 </head>
 <body class="bg-slate-50 h-screen flex overflow-hidden font-sans text-slate-900">
 
-    <!-- Боковая панель -->
+    <!-- Боковая панель (Enterprise Sidebar) -->
     <aside class="w-96 bg-white border-r border-slate-200 flex flex-col shadow-sm z-10 hidden lg:flex">
         <div class="p-6 border-b border-slate-100 bg-indigo-800">
             <h1 class="text-xl font-bold text-white flex items-center gap-3">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                 Enterprise ИИ
             </h1>
-            <p class="text-indigo-100 text-[10px] mt-1 uppercase tracking-widest font-semibold italic">Core Update v12.1.1</p>
+            <p class="text-indigo-100 text-[10px] mt-1 uppercase tracking-widest font-semibold italic">Ultimate 20-Pair Edition v12.2</p>
         </div>
 
-        <div class="p-6 flex-1 overflow-y-auto space-y-8">
-            <!-- Выбор Модели -->
+        <div class="p-6 flex-1 overflow-y-auto space-y-6">
+            <!-- Секция 1: Выбор Модели (20 категорий) -->
             <div class="space-y-4">
-                <label class="text-xs font-bold text-slate-500 uppercase flex items-center gap-2 tracking-tighter italic">🧠 Выбор "Мозга"</label>
+                <label class="text-xs font-bold text-slate-500 uppercase flex items-center gap-2 tracking-tighter italic">🧠 Выбор "Мозга" (40 моделей)</label>
                 <select id="model-select" onchange="updateModelDesc()" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 p-4 outline-none transition-all shadow-sm font-semibold cursor-pointer">
-                    <option value="loading">Загрузка моделей...</option>
+                    <option value="loading">Синхронизация нейросетей...</option>
                 </select>
                 <div id="model-description-box" class="p-4 rounded-xl bg-indigo-50 border border-indigo-100 text-[12px] text-indigo-950 leading-relaxed shadow-inner font-medium italic">
-                    Ожидание синхронизации...
+                    Загрузка специальностей...
                 </div>
             </div>
 
-            <!-- Загрузка файлов -->
+            <!-- Секция 2: Загрузка в Pinecone -->
             <div class="pt-6 border-t border-slate-100 space-y-4">
-                <label class="text-xs font-bold text-slate-500 uppercase flex items-center gap-2 tracking-tighter italic">📁 Обучение Агента (RAG)</label>
+                <label class="text-xs font-bold text-slate-500 uppercase flex items-center gap-2 tracking-tighter italic">📁 Обучение (RAG Pipeline)</label>
                 <div class="relative group">
                     <input type="file" id="file-input" class="hidden" accept=".pdf,.txt,.docx,.csv,.xlsx" onchange="uploadFile()">
                     <label for="file-input" class="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer bg-slate-50 hover:bg-indigo-50 hover:border-indigo-400 transition-all group">
@@ -56,30 +58,33 @@
                         </div>
                     </label>
                 </div>
-                <div id="upload-status" class="hidden text-[11px] text-center font-bold p-3 rounded-lg shadow-sm"></div>
+                <div id="upload-status" class="hidden text-[11px] text-center font-bold p-3 rounded-lg shadow-sm transition-all"></div>
             </div>
 
+            <!-- Секция 3: Кнопки -->
             <div class="pt-6 border-t border-slate-100">
-                <button onclick="resetSession()" class="w-full group bg-white border border-slate-200 text-slate-700 hover:text-indigo-600 font-bold rounded-xl text-sm px-5 py-3 transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95">
+                <button onclick="resetSession()" class="w-full group bg-white border border-slate-200 text-slate-700 hover:text-indigo-600 hover:border-indigo-300 font-bold rounded-xl text-sm px-5 py-3 transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                    Новая сессия
+                    Очистить сессию
                 </button>
             </div>
         </div>
         
         <div class="p-4 bg-slate-50 text-[10px] text-slate-400 text-center border-t border-slate-200 font-bold tracking-widest uppercase">
-            Railway Deployment: daddycool.up.railway.app
+            Backend: daddycool.up.railway.app
         </div>
     </aside>
 
-    <!-- Главная область чата -->
+    <!-- Основной чат -->
     <main class="flex-1 flex flex-col bg-slate-50 relative">
         <div id="chat-container" class="flex-1 p-4 md:p-10 overflow-y-auto flex flex-col gap-6">
             <div class="flex gap-4 max-w-5xl message-appear">
                 <div class="w-12 h-12 rounded-2xl bg-indigo-800 flex items-center justify-center flex-shrink-0 shadow-lg text-white text-xl">🤖</div>
                 <div class="bg-white border border-slate-200 p-6 rounded-3xl rounded-tl-none shadow-sm text-slate-800">
-                    <p class="font-bold text-indigo-700 mb-2 underline decoration-indigo-200 text-lg uppercase">Система Обновлена</p>
-                    Привет, Олег! Я обновил адрес вебхука. Теперь я готов слушать тебя по новому каналу. Все настройки моделей и загрузки файлов сохранены.
+                    <p class="font-bold text-indigo-700 mb-2 underline decoration-indigo-200 text-lg uppercase">Система v12.2: 20 Категорий Интеллекта</p>
+                    Привет, Олег! Я восстановил полный арсенал из **20 интеллектуальных дуэлей**. 
+                    <br><br>
+                    Теперь у тебя снова есть доступ к новейшим моделям 2026 года, включая **Gemini 3.1 Pro Thinking**, **Claude 4.6** и **GPT-5**. Я готов искать ответы в твоих документах Pinecone!
                 </div>
             </div>
         </div>
@@ -87,13 +92,13 @@
         <!-- Индикатор загрузки -->
         <div id="loading-indicator" class="hidden absolute bottom-32 left-4 md:left-10 flex items-center gap-3 text-sm text-slate-600 bg-white px-6 py-3 rounded-full shadow-2xl border border-slate-200 z-20">
             <svg class="animate-spin h-5 w-5 text-indigo-700" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-            <span class="font-bold animate-pulse italic text-indigo-800">Анализ нейронных связей...</span>
+            <span class="font-bold animate-pulse italic text-indigo-800 text-xs">Масштабирование контекста...</span>
         </div>
 
         <!-- Поле ввода -->
         <div class="bg-white border-t border-slate-200 p-4 md:p-8 shadow-lg">
             <div class="max-w-5xl mx-auto relative flex items-center">
-                <input type="text" id="chat-input" placeholder="Введите задачу для ИИ..." 
+                <input type="text" id="chat-input" placeholder="Введите задачу или вопрос по документам..." 
                     class="w-full bg-slate-50 border border-slate-300 rounded-2xl pl-6 pr-16 py-4 md:py-5 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:bg-white transition-all shadow-inner text-base md:text-lg"
                     onkeypress="if(event.key === 'Enter') sendMessage()">
                 <button onclick="sendMessage()" class="absolute right-3 bg-indigo-800 hover:bg-indigo-900 text-white p-3 md:p-4 rounded-xl transition-all shadow-md active:scale-90 flex items-center justify-center">
@@ -104,23 +109,92 @@
     </main>
 
     <script>
-        // === ОБНОВЛЕННЫЕ АДРЕСА ВЕБХУКОВ ===
+        // === КОНФИГУРАЦИЯ ВЕБХУКОВ ===
         const DOMAIN = 'https://daddycool.up.railway.app';
         const CHAT_URL = `${DOMAIN}/webhook/5b888531-28b3-4566-b52d-36b070d0da2c/chat`;
         const UPLOAD_URL = `${DOMAIN}/webhook/5b888531-28b3-4566-b52d-36b070d0da2c/upload`; 
         
+        // === КАТАЛОГ 20 ИНТЕЛЛЕКТУАЛЬНЫХ ПАР (ОБНОВЛЕНИЕ 2026) ===
         const MODEL_PAIRS = [
-            { group: "📚 GOOGLE (Latest)", items: [
-                { id: 'google/gemini-3.1-pro-thinking', type: 'PREMIUM', desc: '🧠 Gemini 3.1 Pro (Thinking): Глубокое мышление и матан.' },
-                { id: 'google/gemini-3.1-flash', type: 'BUDGET', desc: '🚀 Gemini 3.1 Flash: Скорость и поиск в Pinecone.' }
+            { group: "📚 GOOGLE (Latest Reasoning)", items: [
+                { id: 'google/gemini-3.1-pro-thinking', type: 'PREMIUM', desc: '🧠 Gemini 3.1 Pro (Thinking): Режим глубокого размышления. Скриншот подтвердил её мощь!' },
+                { id: 'google/gemini-3.1-flash', type: 'BUDGET', desc: '🚀 Gemini 3.1 Flash: Быстрый как молния, идеален для поиска в Pinecone.' }
             ]},
-            { group: "💎 CLAUDE 4.6 (Anthropic)", items: [
-                { id: 'anthropic/claude-4.6-opus', type: 'PREMIUM', desc: '💎 Claude 4.6 Opus: Вершина кодинга и логики.' },
-                { id: 'anthropic/claude-4.6-sonnet', type: 'BUDGET', desc: '🚀 Claude 4.6 Sonnet: Лучший баланс силы и цены.' }
+            { group: "💎 CLAUDE 4.6 (Anthropic Elite)", items: [
+                { id: 'anthropic/claude-4.6-opus', type: 'PREMIUM', desc: '💎 Claude 4.6 Opus: Вершина адаптивного мышления. Лучшая в кодинге и логике.' },
+                { id: 'anthropic/claude-4.6-sonnet', type: 'BUDGET', desc: '🚀 Claude 4.6 Sonnet: Быстрее, дешевле, контекст 1 млн токенов.' }
             ]},
-            { group: "🧠 GPT-5 (OpenAI Elite)", items: [
-                { id: 'openai/gpt-5', type: 'PREMIUM', desc: '🌟 GPT-5: Самый умный универсал от OpenAI.' },
-                { id: 'openai/gpt-5-mini', type: 'BUDGET', desc: '👶 GPT-5 Mini: Шустрый помощник для простых задач.' }
+            { group: "🌟 GPT-5 (OpenAI NextGen)", items: [
+                { id: 'openai/gpt-5', type: 'PREMIUM', desc: '🌟 GPT-5: Самый умный универсал. Бесшовное зрение и мультимодальность.' },
+                { id: 'openai/gpt-5-mini', type: 'BUDGET', desc: '👶 GPT-5 Mini: Шустрый малыш для повседневных простых задач.' }
+            ]},
+            { group: "🧪 REASONING (DeepSeek R2)", items: [
+                { id: 'deepseek/deepseek-r2', type: 'PREMIUM', desc: '🧠 DeepSeek R2: Новое поколение мыслителей. Решает сложнейший матан.' },
+                { id: 'deepseek/deepseek-v4', type: 'BUDGET', desc: '💨 DeepSeek V4: Самая экономичная флагманская модель в мире.' }
+            ]},
+            { group: "🏛 LLAMA 4.0 (Meta Elite)", items: [
+                { id: 'meta-llama/llama-4-400b', type: 'PREMIUM', desc: '🏛 Llama 4.0 400B: Самая мощная открытая модель. Конкурент GPT-5.' },
+                { id: 'meta-llama/llama-4-70b', type: 'BUDGET', desc: '🚜 Llama 4.0 70B: Идеальная рабочая лошадка для бизнес-задач.' }
+            ]},
+            { group: "🔍 LIVE SEARCH (Perplexity)", items: [
+                { id: 'perplexity/llama-4-sonar-online', type: 'PREMIUM', desc: '🧭 Sonar Online: Глубокий поиск по вебу 2026 года в реальном времени.' },
+                { id: 'perplexity/llama-4-sonar-small', type: 'BUDGET', desc: '🛰 Sonar Small: Проверка фактов и новостей за секунды.' }
+            ]},
+            { group: "💻 CODER ELITE (Qwen 3.0)", items: [
+                { id: 'qwen/qwen-3-coder-72b', type: 'PREMIUM', desc: '🏔 Qwen 3.0 Coder: Специализированный эксперт по архитектуре кода.' },
+                { id: 'qwen/qwen-3-coder-7b', type: 'BUDGET', desc: '🗻 Qwen 3.0 Coder Mini: Карманный отладчик кода.' }
+            ]},
+            { group: "🎭 ROLEPLAY (Hermes 4)", items: [
+                { id: 'nousresearch/hermes-4-llama-4-400b', type: 'PREMIUM', desc: '🎭 Hermes 4: Лучшая для сложных сценариев и персонажей.' },
+                { id: 'nousresearch/hermes-4-8b', type: 'BUDGET', desc: '🃏 Hermes 4 Mini: Быстрый мастер сюжетов.' }
+            ]},
+            { group: "🏗 LIQUID LFM 2.0", items: [
+                { id: 'liquid/lfm-2.0-80b', type: 'PREMIUM', desc: '🏗 LFM 2.0: Жидкие нейросети. Феноменальная память на диалоги.' },
+                { id: 'liquid/lfm-2.0-mini', type: 'BUDGET', desc: '💧 LFM 2.0 Mini: Компактный "жидкий" интеллект.' }
+            ]},
+            { group: "🇫🇷 MISTRAL LARGE 3", items: [
+                { id: 'mistralai/mistral-large-3', type: 'PREMIUM', desc: '🗼 Mistral Large 3: Гордость Европы. Очень вежливый и умный.' },
+                { id: 'mistralai/mistral-nemo-2', type: 'BUDGET', desc: '🚲 Mistral Nemo 2: Точный и компактный европеец.' }
+            ]},
+            { group: "📐 QWEN MATH 3", items: [
+                { id: 'qwen/qwen-3-math-72b', type: 'PREMIUM', desc: '📐 Qwen Math 3: Специалист по олимпиадным задачам и теоремам.' },
+                { id: 'qwen/qwen-3-math-7b', type: 'BUDGET', desc: '📏 Qwen Math Mini: Быстрое решение примеров любой сложности.' }
+            ]},
+            { group: "⚡ SPEED EXPERTS", items: [
+                { id: '01-ai/yi-next-large', type: 'PREMIUM', desc: '⚡ Yi Next: Очень мощный китайский интеллект.' },
+                { id: '01-ai/yi-lightning-v2', type: 'BUDGET', desc: '🌩 Yi Lightning 2: Самая быстрая генерация текста на рынке.' }
+            ]},
+            { group: "🤖 GROK-3 (X.AI)", items: [
+                { id: 'x-ai/grok-3', type: 'PREMIUM', desc: '🤖 Grok-3: Без цензуры, прямой доступ к данным реального времени.' },
+                { id: 'x-ai/grok-3-mini', type: 'BUDGET', desc: '🦾 Grok-3 Mini: Лаконичные ответы на технические темы.' }
+            ]},
+            { group: "🏛 PHI-4 (Microsoft)", items: [
+                { id: 'microsoft/phi-4-instruct', type: 'PREMIUM', desc: '🏛 Phi-4: Невероятно умная модель для своих размеров от Microsoft.' },
+                { id: 'microsoft/phi-4-mini', type: 'BUDGET', desc: '🚲 Phi-4 Mini: Лучший выбор для работы на мобильных устройствах.' }
+            ]},
+            { group: "🧬 R2 DISTILL SERIES", items: [
+                { id: 'deepseek/deepseek-r2-distill-llama-70b', type: 'PREMIUM', desc: '🧬 R2 Distill 70B: Мозг DeepSeek R2 в надежном теле Llama.' },
+                { id: 'deepseek/deepseek-r2-distill-llama-8b', type: 'BUDGET', desc: '🔬 R2 Distill 8B: Компактный исследователь для простых логик.' }
+            ]},
+            { group: "🛡 GEMINI THINKING FALLBACK", items: [
+                { id: 'google/gemini-2.0-flash-thinking-preview', type: 'PREMIUM', desc: '🛡 Gemini 2.0 Think: Предыдущее поколение мыслителей Google.' },
+                { id: 'google/gemini-1.5-flash', type: 'BUDGET', desc: '🚀 Gemini 1.5 Flash: Проверенная временем классика скорости.' }
+            ]},
+            { group: "🏮 QWEN 3.0 CHAT", items: [
+                { id: 'qwen/qwen-3-72b-instruct', type: 'PREMIUM', desc: '🏮 Qwen 3.0: Универсальный флагман Alibaba. Очень силен в русском языке.' },
+                { id: 'qwen/qwen-3-7b-instruct', type: 'BUDGET', desc: '🎋 Qwen 3.0 Mini: Шустрая маленькая модель для простых переводов.' }
+            ]},
+            { group: "🏰 RAG SPECIALISTS", items: [
+                { id: 'cohere/command-r7', type: 'PREMIUM', desc: '🏰 Command R7: Модель, созданная специально для поиска по файлам.' },
+                { id: 'cohere/command-r-v2', type: 'BUDGET', desc: '🏯 Command R v2: Базовый вариант для офисных сводок.' }
+            ]},
+            { group: "📖 LONG CONTEXT FALLBACK", items: [
+                { id: 'google/gemini-3.0-pro', type: 'PREMIUM', desc: '📖 Gemini 3.0 Pro: Память 2 млн токенов. Анализ целых архивов.' },
+                { id: 'google/gemini-2.5-flash', type: 'BUDGET', desc: '⚡ Gemini 2.5 Flash: Стабильная рабочая лошадка контекста.' }
+            ]},
+            { group: "📱 MOBILE INTELLIGENCE", items: [
+                { id: 'openai/gpt-4o-mini', type: 'PREMIUM', desc: '🌟 GPT-4o Mini: Золотой стандарт экономичных чатов.' },
+                { id: 'google/gemini-flash-1.5-8b', type: 'BUDGET', desc: '👶 Gemini 8B: Крошечный, но очень полезный помощник.' }
             ]}
         ];
 
@@ -131,9 +205,9 @@
 
         function updateModelDesc() {
             const selectedId = modelSelect.value;
-            let description = 'Стандартная модель каталога.';
+            let description = 'Стандартная модель каталога OpenRouter.';
             MODEL_PAIRS.forEach(group => { group.items.forEach(item => { if(item.id === selectedId) description = item.desc; }); });
-            descBox.innerHTML = `<strong>Тип:</strong> ${description}`;
+            descBox.innerHTML = `<strong>Специализация:</strong> ${description}`;
             descBox.classList.add('bg-indigo-100');
             setTimeout(() => descBox.classList.remove('bg-indigo-100'), 300);
         }
@@ -157,7 +231,7 @@
                     modelSelect.appendChild(optGroup);
                 });
                 const otherGroup = document.createElement('optgroup');
-                otherGroup.label = "🌐 ВЕСЬ КАТАЛОГ OPENROUTER";
+                otherGroup.label = "🌐 ОСТАЛЬНЫЕ МОДЕЛИ КАТАЛОГА";
                 const featuredIds = MODEL_PAIRS.flatMap(g => g.items.map(i => i.id));
                 allModels.filter(m => !featuredIds.includes(m.id)).sort((a, b) => a.name.localeCompare(b.name)).forEach(m => otherGroup.appendChild(new Option(m.name, m.id)));
                 modelSelect.appendChild(otherGroup);
@@ -185,12 +259,12 @@
                 const response = await fetch(UPLOAD_URL, { method: 'POST', body: formData });
                 if (response.ok) {
                     status.classList.replace('bg-indigo-100', 'bg-green-100');
-                    status.innerText = '✅ Данные в Pinecone';
-                    appendMessage('bot', `Файл **${file.name}** успешно выучен! Задавай вопросы по нему.`);
+                    status.innerText = '✅ Данные загружены в Pinecone';
+                    appendMessage('bot', `Файл **${file.name}** успешно выучен! Информация из него добавлена в мою долгосрочную память.`);
                 } else { throw new Error(); }
             } catch (error) {
                 status.classList.replace('bg-indigo-100', 'bg-red-100');
-                status.innerText = '❌ Ошибка транзакции';
+                status.innerText = '❌ Ошибка Pipeline';
             } finally { fileInput.value = ''; setTimeout(() => status.classList.add('hidden'), 5000); }
         }
 
@@ -209,7 +283,7 @@
                     body: JSON.stringify({ action: 'sendMessage', sessionId, chatInput: text })
                 });
                 const data = await response.json();
-                appendMessage('bot', data.output || (Array.isArray(data) ? data[0].output : 'Ошибка ответа.'));
+                appendMessage('bot', data.output || (Array.isArray(data) ? data[0].output : 'Ошибка формата ответа.'));
             } catch (error) {
                 appendMessage('bot', '❌ **Сбой Pipeline.** Проверьте статус в Railway.');
             } finally {
@@ -221,7 +295,7 @@
             const wrap = document.createElement('div');
             wrap.className = `flex gap-4 max-w-5xl message-appear ${sender === 'user' ? 'ml-auto flex-row-reverse' : ''}`;
             const icon = document.createElement('div');
-            icon.className = `w-10 md:w-12 h-10 md:h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-md ${sender === 'user' ? 'bg-indigo-800 text-white' : 'bg-white border'}`;
+            icon.className = `w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-md ${sender === 'user' ? 'bg-indigo-800 text-white' : 'bg-white border'}`;
             icon.innerHTML = sender === 'user' ? '👤' : '🤖';
             const bubble = document.createElement('div');
             bubble.className = `p-4 md:p-6 rounded-3xl shadow-sm ${sender === 'user' ? 'bg-indigo-800 text-white rounded-tr-none border-none' : 'bg-white border text-slate-800 rounded-tl-none prose max-w-none'}`;
@@ -234,7 +308,7 @@
         function resetSession() {
             sessionId = crypto.randomUUID();
             chatContainer.innerHTML = '';
-            appendMessage('bot', '⚡ Сессия обновлена. База Pinecone активна.');
+            appendMessage('bot', '⚡ Сессия обновлена. Твои знания в Pinecone активны.');
         }
     </script>
 </body>
