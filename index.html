@@ -3,184 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise ИИ-Ассистент | omikhaylov76</title>
-    <!-- Tailwind CSS для современного и адаптивного дизайна -->
+    <title>Enterprise AI Assistant | omikhaylov76</title>
+    <!-- Tailwind CSS для дизайна -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Marked.js для рендеринга Markdown ответов -->
+    <!-- Marked.js для рендеринга Markdown -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* Стилизация скроллбара */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        
-        /* Стилизация текста бота */
         .prose p { margin-bottom: 0.75rem; line-height: 1.6; }
         .prose ul { list-style-type: disc; padding-left: 1.25rem; margin-bottom: 0.75rem; }
-        .prose strong { font-weight: 700; color: #1e293b; }
-        
-        /* Анимация появления сообщений */
         .message-appear { animation: fadeInUp 0.4s ease-out forwards; }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Улучшенная стилизация выпадающих списков */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         optgroup { font-weight: 800; text-transform: uppercase; color: #4f46e5; background: #f8fafc; }
         option { font-weight: 400; text-transform: none; color: #1e293b; background: white; }
     </style>
 </head>
 <body class="bg-slate-50 h-screen flex overflow-hidden font-sans text-slate-900">
 
-    <!-- Боковая панель управления (Sidebar) -->
+    <!-- Боковая панель -->
     <aside class="w-96 bg-white border-r border-slate-200 flex flex-col shadow-sm z-10 hidden md:flex">
         <div class="p-6 border-b border-slate-100 bg-indigo-600">
             <h1 class="text-xl font-bold text-white flex items-center gap-3">
                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                 Enterprise ИИ
             </h1>
-            <p class="text-indigo-100 text-[10px] mt-1 uppercase tracking-widest font-semibold italic">Multi-Model Architecture v10.0</p>
+            <p class="text-indigo-100 text-[10px] mt-1 uppercase tracking-widest font-semibold italic">Final Architecture v11.0</p>
         </div>
 
         <div class="p-6 flex-1 overflow-y-auto space-y-8">
-            <!-- Выбор модели (Ядро системы) -->
+            <!-- Выбор "Мозга" -->
             <div class="space-y-4">
-                <label class="text-xs font-bold text-slate-500 uppercase flex items-center gap-2 tracking-tighter">
-                    🧠 Выбор "Мозга" (20 пар)
-                </label>
+                <label class="text-xs font-bold text-slate-500 uppercase flex items-center gap-2 tracking-tighter">🧠 Выбор Модели</label>
                 <select id="model-select" onchange="updateModelDesc()" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500 p-4 outline-none transition-all shadow-sm font-semibold cursor-pointer">
-                    <option value="loading">Синхронизация моделей...</option>
+                    <option value="loading">Загрузка моделей...</option>
                 </select>
-                <div id="model-description-box" class="p-4 rounded-xl bg-indigo-50 border border-indigo-100 text-[12px] text-indigo-950 leading-relaxed shadow-inner font-medium italic">
-                    Загрузка справочника специальностей...
-                </div>
+                <div id="model-description-box" class="p-4 rounded-xl bg-indigo-50 border border-indigo-100 text-[12px] text-indigo-950 leading-relaxed shadow-inner font-medium italic">Ожидание выбора...</div>
             </div>
 
-            <!-- Модуль загрузки файлов в Pinecone -->
+            <!-- Модуль RAG (Файлы) -->
             <div class="pt-6 border-t border-slate-100 space-y-4">
-                <label class="text-xs font-bold text-slate-500 uppercase flex items-center gap-2 tracking-tighter">
-                    📁 Обучение Агента (RAG Pipeline)
-                </label>
+                <label class="text-xs font-bold text-slate-500 uppercase flex items-center gap-2 tracking-tighter">📁 База Знаний</label>
                 <div class="relative group">
                     <input type="file" id="file-input" class="hidden" accept=".pdf,.txt,.docx,.csv,.xlsx" onchange="uploadFile()">
                     <label for="file-input" class="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer bg-slate-50 hover:bg-indigo-50 hover:border-indigo-400 transition-all group">
                         <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
-                            <svg id="upload-icon" class="w-10 h-10 mb-3 text-slate-400 group-hover:text-indigo-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                            <p id="upload-text" class="text-xs text-slate-600 group-hover:text-indigo-700 font-bold uppercase tracking-tight">Индексировать файл</p>
-                            <p class="text-[9px] text-slate-400 mt-2 uppercase font-bold leading-tight">PDF, DOCX, TXT, CSV, XLSX</p>
+                            <svg class="w-10 h-10 mb-3 text-slate-400 group-hover:text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            <p class="text-xs text-slate-600 group-hover:text-indigo-700 font-bold uppercase tracking-tight">Индексировать документ</p>
                         </div>
                     </label>
                 </div>
-                <div id="upload-status" class="hidden text-[11px] text-center font-bold p-3 rounded-lg transition-all shadow-sm"></div>
+                <div id="upload-status" class="hidden text-[11px] text-center font-bold p-3 rounded-lg shadow-sm"></div>
             </div>
 
-            <!-- Системные действия -->
             <div class="pt-6 border-t border-slate-100">
-                <button onclick="resetSession()" class="w-full group bg-white border border-slate-200 text-slate-700 hover:text-indigo-600 hover:border-indigo-300 font-bold rounded-xl text-sm px-5 py-3 transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95">
+                <button onclick="resetSession()" class="w-full bg-white border border-slate-200 text-slate-700 hover:text-indigo-600 font-bold rounded-xl text-sm px-5 py-3 transition-all flex items-center justify-center gap-2 active:scale-95 shadow-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                     Новая сессия
                 </button>
             </div>
         </div>
-        
-        <div class="p-4 bg-slate-50 text-[10px] text-slate-400 text-center border-t border-slate-200 font-bold tracking-widest uppercase">
-            Backend Node: daddycool.up.railway.app
-        </div>
+        <div class="p-4 bg-slate-50 text-[10px] text-slate-400 text-center border-t border-slate-200 font-bold uppercase">Backend: daddycool.up.railway.app</div>
     </aside>
 
-    <!-- Основная область чата -->
+    <!-- Чат -->
     <main class="flex-1 flex flex-col bg-slate-50 relative">
-        <!-- Логотип для мобильных -->
-        <div class="md:hidden p-4 bg-indigo-600 text-white flex justify-between items-center shadow-md">
-            <span class="font-bold tracking-tight uppercase text-sm">Enterprise ИИ</span>
-            <button onclick="resetSession()" class="text-xs bg-indigo-500 px-3 py-1 rounded-lg">Сброс</button>
-        </div>
-
-        <!-- Контейнер сообщений -->
         <div id="chat-container" class="flex-1 p-4 md:p-10 overflow-y-auto flex flex-col gap-6">
-            <!-- Приветствие системы -->
             <div class="flex gap-4 max-w-5xl message-appear">
-                <div class="w-10 md:w-12 h-10 md:h-12 rounded-2xl bg-indigo-600 flex items-center justify-center flex-shrink-0 shadow-lg text-white text-xl">🤖</div>
-                <div class="bg-white border border-slate-200 p-5 md:p-6 rounded-3xl rounded-tl-none shadow-sm text-slate-800">
-                    <p class="font-bold text-indigo-600 mb-2 underline decoration-indigo-200 text-lg uppercase tracking-tight">Enterprise Система v10.0 Активна</p>
-                    Привет, Олег! Я готов к работе в режиме **Shared Vector Memory**. 
-                    <br><br>
-                    Выбери нужный "мозг" слева или загрузи документы для обучения. Я автоматически использую знания из Pinecone, чтобы отвечать на твои вопросы максимально точно. Чем займемся сегодня?
+                <div class="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center text-white text-xl shadow-lg">🤖</div>
+                <div class="bg-white border border-slate-200 p-6 rounded-3xl rounded-tl-none shadow-sm text-slate-800">
+                    <p class="font-bold text-indigo-600 mb-2 uppercase tracking-tight">Enterprise Система Готова</p>
+                    Привет, Олег! Все ошибки исправлены. Я подключен к твоей базе Pinecone и готов использовать любую из сотен моделей OpenRouter.
                 </div>
             </div>
         </div>
 
-        <!-- Индикатор выполнения -->
-        <div id="loading-indicator" class="hidden absolute bottom-32 left-4 md:left-10 flex items-center gap-3 text-sm text-slate-600 bg-white px-6 py-3 rounded-full shadow-2xl border border-slate-200 z-20">
+        <div id="loading-indicator" class="hidden absolute bottom-32 left-10 flex items-center gap-3 text-sm text-slate-600 bg-white px-6 py-3 rounded-full shadow-2xl border border-slate-200 z-20">
             <svg class="animate-spin h-5 w-5 text-indigo-600" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-            <span class="font-bold animate-pulse italic text-indigo-700">Анализ нейронных связей...</span>
+            <span class="font-bold animate-pulse italic text-indigo-700">Обработка запроса...</span>
         </div>
 
-        <!-- Нижнее поле ввода -->
-        <div class="bg-white border-t border-slate-200 p-4 md:p-8 shadow-[0_-4px_30px_rgba(0,0,0,0.03)]">
+        <div class="bg-white border-t border-slate-200 p-6 md:p-8">
             <div class="max-w-5xl mx-auto relative flex items-center">
-                <input type="text" id="chat-input" placeholder="Введите задачу или вопрос по базе знаний..." 
-                    class="w-full bg-slate-50 border border-slate-300 rounded-2xl pl-6 pr-16 py-4 md:py-5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all shadow-inner text-base md:text-lg"
-                    onkeypress="if(event.key === 'Enter') sendMessage()">
-                <button onclick="sendMessage()" class="absolute right-3 bg-indigo-600 hover:bg-indigo-700 text-white p-3 md:p-4 rounded-xl transition-all shadow-md active:scale-90 flex items-center justify-center">
+                <input type="text" id="chat-input" placeholder="Задай вопрос или загрузи файл..." class="w-full bg-slate-50 border border-slate-300 rounded-2xl pl-6 pr-16 py-5 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg shadow-inner" onkeypress="if(event.key === 'Enter') sendMessage()">
+                <button onclick="sendMessage()" class="absolute right-3 bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-xl active:scale-90 transition-all">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
                 </button>
-            </div>
-            <div class="text-center mt-3 text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-                Dynamic Routing via n8n & OpenRouter
             </div>
         </div>
     </main>
 
     <script>
-        // === КОНСТАНТЫ СВЯЗИ ===
         const DOMAIN = 'https://daddycool.up.railway.app';
         const CHAT_URL = `${DOMAIN}/webhook/f04f0dcf-afcb-4b32-ae35-cc426fe16628/chat`;
         const UPLOAD_URL = `${DOMAIN}/webhook/f04f0dcf-afcb-4b32-ae35-cc426fe16628/upload`; 
-        
-        // === КАТАЛОГ 20 ИНТЕЛЛЕКТУАЛЬНЫХ ПАР ===
+
         const MODEL_PAIRS = [
-            { group: "💻 КОДИНГ (Software Dev)", items: [
-                { id: 'anthropic/claude-3.5-sonnet', type: 'PREMIUM', desc: '💎 Claude 3.5 Sonnet: Флагман программирования. Лучшая логика кода в мире.' },
-                { id: 'anthropic/claude-3-haiku', type: 'BUDGET', desc: '🚀 Claude 3 Haiku: Мгновенная работа. Идеально для простых функций.' }
-            ]},
-            { group: "🧠 ЛОГИКА (Reasoning)", items: [
-                { id: 'deepseek/deepseek-r1', type: 'PREMIUM', desc: '🧠 DeepSeek R1: Рассуждающая модель. Думает долго, решает олимпиадные задачи.' },
-                { id: 'deepseek/deepseek-chat', type: 'BUDGET', desc: '💨 DeepSeek V3: Самая выгодная и мощная замена GPT-4o.' }
-            ]},
-            { group: "🧪 НАУКА (OpenAI Science)", items: [
-                { id: 'openai/o1-preview', type: 'PREMIUM', desc: '🔬 o1-preview: Вершина научной мысли. Глубокое планирование стратегий.' },
-                { id: 'openai/o1-mini', type: 'BUDGET', desc: '🔢 o1-mini: Быстрый и точный математик.' }
-            ]},
-            { group: "📚 КОНТЕКСТ (Long Data)", items: [
-                { id: 'google/gemini-pro-1.5', type: 'PREMIUM', desc: '📖 Gemini Pro 1.5: Память на 2 млн токенов. Анализ целых книг за раз.' },
-                { id: 'google/gemini-2.5-flash', type: 'BUDGET', desc: '⚡ Gemini Flash: Молниеносный поиск по твоей базе памяти.' }
-            ]},
-            { group: "🌎 УНИВЕРСАЛЬНЫЕ ФЛАГМАНЫ", items: [
-                { id: 'openai/gpt-4o', type: 'PREMIUM', desc: '🌟 GPT-4o: Самый сбалансированный ИИ. Текст, визуал и анализ на высоте.' },
-                { id: 'openai/gpt-4o-mini', type: 'BUDGET', desc: '👶 GPT-4o-mini: Шустрый помощник для легких ежедневных задач.' }
-            ]},
-            { group: "🔍 ПОИСК (Live Web)", items: [
-                { id: 'perplexity/llama-3.1-sonar-huge-128k-online', type: 'PREMIUM', desc: '🧭 Sonar Huge: Глубокий поиск по интернету в реальном времени.' },
-                { id: 'perplexity/llama-3.1-sonar-small-128k-online', type: 'BUDGET', desc: '🛰 Sonar Small: Быстрая проверка новостей и фактов.' }
-            ]},
-            { group: "✍️ КРЕАТИВ (Creative Writing)", items: [
-                { id: 'anthropic/claude-3-opus', type: 'PREMIUM', desc: '🎨 Claude Opus: Самая художественная модель для сложных текстов.' },
-                { id: 'anthropic/claude-3-sonnet', type: 'BUDGET', desc: '🖋 Claude Sonnet: Отличный баланс творчества и фактов.' }
-            ]},
-            { group: "🏛 LLAMA ELITE (Meta)", items: [
-                { id: 'meta-llama/llama-3.1-405b', type: 'PREMIUM', desc: '🏛 Llama 405B: Самая мощная открытая модель в истории человечества.' },
-                { id: 'meta-llama/llama-3.3-70b-instruct', type: 'BUDGET', desc: '🚜 Llama 3.3 70B: Надежный стандарт для бизнес-задач.' }
-            ]},
-            { group: "🏮 КИТАЙСКИЕ ГЕНИИ (Qwen)", items: [
-                { id: 'qwen/qwen-2.5-72b-instruct', type: 'PREMIUM', desc: '🏮 Qwen 72B: Невероятна в матане, коде и понимает русский.' },
-                { id: 'qwen/qwen-2.5-7b-instruct', type: 'BUDGET', desc: '🎋 Qwen 7B: Карманный интеллект для простых переводов.' }
-            ]},
-            { group: "🏰 АНАЛИТИКА (RAG Specialist)", items: [
-                { id: 'cohere/command-r-plus', type: 'PREMIUM', desc: '🏰 Command R+: Модель, созданная специально для поиска в файлах.' },
-                { id: 'cohere/command-r', type: 'BUDGET', desc: '🏯 Command R: Базовый вариант для офисных сводок.' }
-            ]}
+            { group: "💻 КОДИНГ", items: [{ id: 'anthropic/claude-3.5-sonnet', type: 'PREMIUM', desc: '💎 Claude 3.5 Sonnet: Король кодинга.' }, { id: 'anthropic/claude-3-haiku', type: 'BUDGET', desc: '🚀 Claude 3 Haiku: Мгновенный код.' }]},
+            { group: "🧠 ЛОГИКА", items: [{ id: 'deepseek/deepseek-r1', type: 'PREMIUM', desc: '🧠 DeepSeek R1: Рассуждающая модель.' }, { id: 'deepseek/deepseek-chat', type: 'BUDGET', desc: '💨 DeepSeek V3: Лучшая цена.' }]},
+            { group: "📚 КОНТЕКСТ", items: [{ id: 'google/gemini-pro-1.5', type: 'PREMIUM', desc: '📖 Gemini Pro 1.5: Огромная память.' }, { id: 'google/gemini-2.5-flash', type: 'BUDGET', desc: '⚡ Gemini Flash: Молниеносный поиск.' }]},
+            { group: "🌎 УНИВЕРСАЛЫ", items: [{ id: 'openai/gpt-4o', type: 'PREMIUM', desc: '🌟 GPT-4o: Самый популярный ИИ.' }, { id: 'openai/gpt-4o-mini', type: 'BUDGET', desc: '👶 GPT-4o-mini: Шустрый малыш.' }]}
         ];
 
         let sessionId = crypto.randomUUID();
@@ -188,26 +111,19 @@
         const descBox = document.getElementById('model-description-box');
         const chatContainer = document.getElementById('chat-container');
 
-        // Обновление описания модели при выборе
         function updateModelDesc() {
             const selectedId = modelSelect.value;
-            let description = 'Стандартная модель каталога.';
+            let description = 'Стандартная модель OpenRouter.';
             MODEL_PAIRS.forEach(group => { group.items.forEach(item => { if(item.id === selectedId) description = item.desc; }); });
             descBox.innerHTML = `<strong>Тип:</strong> ${description}`;
-            descBox.classList.add('bg-indigo-100');
-            setTimeout(() => descBox.classList.remove('bg-indigo-100'), 300);
         }
 
-        // Динамическая загрузка всех доступных моделей с OpenRouter
         async function fetchModels() {
             try {
                 const response = await fetch('https://openrouter.ai/api/v1/models');
                 const data = await response.json();
                 const allModels = data.data;
-
                 modelSelect.innerHTML = ''; 
-
-                // Рендерим наши приоритетные пары
                 MODEL_PAIRS.forEach(group => {
                     const optGroup = document.createElement('optgroup');
                     optGroup.label = group.group;
@@ -220,110 +136,73 @@
                     });
                     modelSelect.appendChild(optGroup);
                 });
-
-                // Добавляем весь остальной каталог (200+ моделей)
                 const otherGroup = document.createElement('optgroup');
-                otherGroup.label = "🌐 ВЕСЬ ОСТАЛЬНОЙ КАТАЛОГ";
+                otherGroup.label = "🌐 ВЕСЬ КАТАЛОГ";
                 const featuredIds = MODEL_PAIRS.flatMap(g => g.items.map(i => i.id));
-                allModels.filter(m => !featuredIds.includes(m.id))
-                         .sort((a, b) => a.name.localeCompare(b.name))
-                         .forEach(m => otherGroup.appendChild(new Option(m.name, m.id)));
+                allModels.filter(m => !featuredIds.includes(m.id)).sort((a, b) => a.name.localeCompare(b.name)).forEach(m => otherGroup.appendChild(new Option(m.name, m.id)));
                 modelSelect.appendChild(otherGroup);
-
                 updateModelDesc();
-            } catch (err) {
-                console.error('API Error:', err);
-                modelSelect.innerHTML = '<option value="google/gemini-2.5-flash">Gemini 2.5 Flash (Default)</option>';
-            }
+            } catch (err) { modelSelect.innerHTML = '<option value="google/gemini-2.5-flash">Gemini 2.5 Flash</option>'; }
         }
 
         fetchModels();
 
-        // === ГЛОБАЛЬНАЯ ВЕКТОРНАЯ ЗАГРУЗКА (RAG) ===
         async function uploadFile() {
             const fileInput = document.getElementById('file-input');
             const status = document.getElementById('upload-status');
             const file = fileInput.files[0];
             if (!file) return;
-
             status.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-800');
             status.classList.add('block', 'bg-indigo-100', 'text-indigo-800');
             status.innerText = `⌛ Индексация ${file.name}...`;
-
             const formData = new FormData();
             formData.append('file', file);
             formData.append('sessionId', sessionId);
-
             try {
                 const response = await fetch(UPLOAD_URL, { method: 'POST', body: formData });
                 if (response.ok) {
                     status.classList.replace('bg-indigo-100', 'bg-green-100');
                     status.classList.replace('text-indigo-800', 'text-green-800');
-                    status.innerText = '✅ Транзакция успешна: Данные в Pinecone';
-                    appendMessage('bot', `Я успешно проанализировал документ **${file.name}**. Информация из него добавлена в мою долгосрочную память. Можешь задавать вопросы!`);
+                    status.innerText = '✅ Файл выучен!';
+                    appendMessage('bot', `Файл **${file.name}** успешно проиндексирован.`);
                 } else { throw new Error(); }
             } catch (error) {
                 status.classList.replace('bg-indigo-100', 'bg-red-100');
-                status.classList.replace('text-indigo-800', 'text-red-700');
-                status.innerText = '❌ Ошибка Pipeline';
-            } finally {
-                fileInput.value = '';
-                setTimeout(() => status.classList.add('hidden'), 5000);
-            }
+                status.innerText = '❌ Ошибка транзакции';
+            } finally { fileInput.value = ''; setTimeout(() => status.classList.add('hidden'), 5000); }
         }
 
-        // === ОБРАБОТКА ДИАЛОГА ===
         async function sendMessage() {
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
             if (!text) return;
-
             const selectedModel = modelSelect.value;
             appendMessage('user', text);
             input.value = '';
             document.getElementById('loading-indicator').classList.remove('hidden');
-
             try {
-                // Динамическая маршрутизация: передаем выбранную модель в Query Param
                 const response = await fetch(`${CHAT_URL}?model=${encodeURIComponent(selectedModel)}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action: 'sendMessage', sessionId, chatInput: text })
                 });
-
-                if (!response.ok) throw new Error('n8n error');
-                
                 const data = await response.json();
-                const result = data.output || (Array.isArray(data) ? data[0].output : 'Ошибка формата данных.');
-                
-                appendMessage('bot', result);
+                appendMessage('bot', data.output || 'Ошибка формата ответа.');
             } catch (error) {
-                appendMessage('bot', '❌ **Сбой Pipeline.**\nПроверьте статус воркфлоу в Railway и баланс OpenRouter.');
-            } finally {
-                document.getElementById('loading-indicator').classList.add('hidden');
-            }
+                appendMessage('bot', '❌ **Сбой Pipeline.** Проверьте Railway.');
+            } finally { document.getElementById('loading-indicator').classList.add('hidden'); }
         }
 
         function appendMessage(sender, text) {
             const wrap = document.createElement('div');
             wrap.className = `flex gap-4 max-w-5xl message-appear ${sender === 'user' ? 'ml-auto flex-row-reverse' : ''}`;
-
             const icon = document.createElement('div');
-            icon.className = `w-10 md:w-12 h-10 md:h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-md ${sender === 'user' ? 'bg-indigo-600 text-white' : 'bg-white border border-slate-300'}`;
+            icon.className = `w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-md ${sender === 'user' ? 'bg-indigo-600' : 'bg-white border'}`;
             icon.innerHTML = sender === 'user' ? '👤' : '🤖';
-
             const bubble = document.createElement('div');
-            bubble.className = `p-4 md:p-6 rounded-3xl shadow-sm text-base ${
-                sender === 'user' 
-                ? 'bg-indigo-600 text-white rounded-tr-none border-none' 
-                : 'bg-white border border-slate-200 text-slate-800 rounded-tl-none prose prose-slate max-w-none'
-            }`;
-            
-            // Используем marked для рендеринга Markdown и сохранения HTML-тегов (для цвета)
+            bubble.className = `p-6 rounded-3xl shadow-sm ${sender === 'user' ? 'bg-indigo-600 text-white rounded-tr-none border-none' : 'bg-white border text-slate-800 rounded-tl-none prose max-w-none'}`;
             bubble.innerHTML = sender === 'bot' ? marked.parse(text) : text;
-
-            wrap.appendChild(icon); 
-            wrap.appendChild(bubble);
+            wrap.appendChild(icon); wrap.appendChild(bubble);
             chatContainer.appendChild(wrap);
             chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' });
         }
@@ -331,7 +210,7 @@
         function resetSession() {
             sessionId = crypto.randomUUID();
             chatContainer.innerHTML = '';
-            appendMessage('bot', '⚡ **Сессия обновлена.** Я готов к новому диалогу. Твоя база знаний в Pinecone по-прежнему доступна.');
+            appendMessage('bot', '⚡ Сессия обновлена.');
         }
     </script>
 </body>
